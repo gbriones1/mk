@@ -1,0 +1,17 @@
+.form-inline .form-group {
+	float: left;
+}
+
+.form-inline .input-group .input-group-addon, .form-inline .input-group input{
+	width: auto;
+}
+
+@media (max-width: 480px){
+	.form-inline .form-group {
+		float: none;
+	}
+
+	.form-inline .input-group, .form-inline .input-group input{
+		width: 100%;
+	}
+}

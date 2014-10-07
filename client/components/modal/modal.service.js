@@ -8,15 +8,16 @@ angular.module('mkApp')
      * @param  {String} modalClass - (optional) class(es) to be applied to the modal
      * @return {Object}            - the instance $modal.open() returns
      */
-    function openModal(scope, modalClass) {
+    function openModal(scope, modalClass, template) {
       var modalScope = $rootScope.$new();
       scope = scope || {};
       modalClass = modalClass || 'modal-default';
+      template = template || 'components/modal/modal.html';
 
       angular.extend(modalScope, scope);
 
       return $modal.open({
-        templateUrl: 'components/modal/modal.html',
+        templateUrl: template,
         windowClass: modalClass,
         scope: modalScope
       });
@@ -24,6 +25,40 @@ angular.module('mkApp')
 
     // Public API here
     return {
+
+      openModal: openModal,
+
+      form: {
+        order: function() {
+            var orderForm;
+
+            orderForm = openModal({
+              modal: {
+                dismissable: true,
+                title: 'Nueva Compra',
+                html: '<p>Contenido</p>',
+                buttons: [{
+                  classes: 'btn-primary',
+                  text: 'OK',
+                  click: function(e) {
+                    orderForm.close(e);
+                  }
+                }, {
+                  classes: 'btn-default',
+                  text: 'Cancel',
+                  click: function(e) {
+                    orderForm.dismiss(e);
+                  }
+                }]
+              }
+            }, 'modal-primary');
+
+            orderForm.result.then(function(order) {
+              console.log("result");
+              console.log(order);
+            });
+          }
+      },
 
       /* Confirmation modals */
       confirm: {

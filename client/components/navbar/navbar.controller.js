@@ -11,6 +11,9 @@ angular.module('mkApp')
     },{
       'title': 'Productos',
       'link': '/product'
+    },{
+      'title': 'Reportes',
+      'link': '/report'
     }];
 
     $scope.isCollapsed = true;

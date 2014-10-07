@@ -2,19 +2,41 @@
 
 <header class="hero-unit" id="banner">
   <div class="container">
-    <h1>Lista de Clientes</h1>
-    <p class="lead">Kick-start your next web app with Angular Fullstack</p>
-    <img src="assets/images/yeoman.png" alt="I'm Yeoman">
+    <h1>
+      <div class="col-lg-6">
+        <select class="form-control input-lg" ng-model="currentOrder.month" ng-options="month for month in months"></select>
+      </div>
+      <div class="col-lg-6">
+        <select class="form-control input-lg" ng-model="currentOrder.year" ng-options="year for year in years"></select>
+      </div>
+    </h1>
   </div>
 </header>
 
 <div class="container">
   <div class="row">
-    <div class="col-lg-12">
-      <h1 class="page-header">Features:</h1>
-      <ul class="nav nav-tabs nav-stacked col-md-4 col-lg-4 col-sm-6">
-        <li><a href="#" tooltip="Cliente info">Cliente</a></li>
-      </ul>
+    <div class="col-lg-12" ng-if="customers">
+      <h1 class="page-header">Lista de peticiones:<button class="btn btn-success pull-right" ng-click="newPurchase()">Nueva Compra</button></h1>
+    </div>
+    <div class="col-lg-12" ng-if="customersWithOrders.length">
+      <accordion close-others="true">
+        <accordion-group ng-repeat="customer in customersWithOrders" is-open="status.open" class="panel panel-primary">
+          <accordion-heading>
+            <div class="customer-info" data-customer-id="{{customer._id}}"></div>
+            {{customer.name}}<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
+          </accordion-heading>
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Compras</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="purchase in customer.purchases"><td>{{purchase}}</td></tr>
+            </tbody>
+          </table>
+        </accordion-group>
+      </accordion>
     </div>
   </div>
 </div>

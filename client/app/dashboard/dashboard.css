@@ -1,0 +1,10 @@
+@media (max-width: 480px){
+	.page-header .btn {
+		float: none;
+		margin-top: 20px;
+	}
+	accordion .panel-group{
+		margin-top: 3pc;
+	}
+
+}

@@ -21,8 +21,12 @@
     <link rel="stylesheet" href="app/app.css">
       <!-- injector:css -->
       <link rel="stylesheet" href="app/app.css">
+      <link rel="stylesheet" href="app/customer/customer.css">
+      <link rel="stylesheet" href="app/dashboard/dashboard.css">
       <link rel="stylesheet" href="app/main/main.css">
+      <link rel="stylesheet" href="app/product/product.css">
       <link rel="stylesheet" href="components/modal/modal.css">
+      <link rel="stylesheet" href="components/notification/notification.css">
       <!-- endinjector -->
     <!-- endbuild -->
   </head>
@@ -31,6 +35,7 @@
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
 
+    <div ng-include="'components/notification/notification.html'"></div>
     <!-- Add your site or application content here -->
     <div ng-view=""></div>
 
@@ -72,8 +77,11 @@
           <script src="app/dashboard/dashboard.js"></script>
           <script src="app/main/main.controller.js"></script>
           <script src="app/main/main.js"></script>
+          <script src="app/product/product.controller.js"></script>
+          <script src="app/product/product.js"></script>
           <script src="components/modal/modal.service.js"></script>
           <script src="components/navbar/navbar.controller.js"></script>
+          <script src="components/notification/notification.service.js"></script>
           <!-- endinjector -->
         <!-- endbuild -->
 </body>

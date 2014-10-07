@@ -1,0 +1,40 @@
+<div class="modal-header">
+  <button ng-if="modal.dismissable" type="button" ng-click="$dismiss()" class="close">&times;</button>
+  <h4 ng-if="modal.title" ng-bind="modal.title" class="modal-title"></h4>
+</div>
+<div class="modal-body">
+  <p ng-if="modal.text" ng-bind="modal.text"></p>
+  <div ng-if="modal.html" ng-bind-html="modal.html"></div>
+	<form class="form-horizontal" role="form">
+		<div class="form-group">
+			<label for="dateSelect" class="col-sm-2 control-label">Fecha: </label>
+			<div class="col-sm-2">
+				<select class="form-control" ng-model="order.day" ng-options="day for day in days" id="dateSelect"></select>
+			</div>
+			<div class="col-sm-3">
+				<select class="form-control" ng-model="order.month" ng-options="month for month in months"></select>
+			</div>
+			<div class="col-sm-3">
+				<select class="form-control" ng-model="order.year" ng-options="year for year in years"></select>
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="customerSelect" class="col-sm-2 control-label">Cliente: </label>
+			<div class="col-sm-10">
+				<select class="form-control" ng-model="order.customer" ng-options="customer.name for customer in customers" id="customerSelect"></select>
+			</div>
+		</div>
+		<!-- <div class="form-group">
+			<label for="productsSelect" class="col-sm-2 control-label">Productos: </label>
+			<div class="col-sm-10">
+				<select multiple class="form-control" ng-model="order.products" ng-options="product.name for product in products" id="productsSelect"></select>
+			</div>
+			<label for="amountInput" class="col-sm-offset-2 col-sm-2 control-label">Cantidad: </label>
+			<div class="col-sm-8">
+				<input type="text" value="1" class="form-control">
+			</div>
+		</div> -->
+	</form>
+<div class="modal-footer">
+  <button ng-repeat="button in modal.buttons" ng-class="button.classes" ng-click="button.click(order)" ng-bind="button.text" class="btn"></button>
+</div>

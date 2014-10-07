@@ -1,0 +1,15 @@
+.panel-heading a.accordion-toggle{
+	display: block;
+	text-decoration: none;
+}
+
+.panel-heading input.header-checkbox{
+	float: left;
+	margin-right: 10px;
+}
+
+.actions{
+	margin-left: 15px;
+	margin-right: 15px;
+	margin-bottom: 15px;
+}

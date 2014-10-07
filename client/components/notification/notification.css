@@ -1,0 +1,15 @@
+.alert-area{
+	position:fixed;
+	width:300px;
+	right:30px;
+	top:30px;
+	z-index:1001; 
+}
+/*.alert-dismissable {
+	padding-right: 35px;
+}
+.alert {
+	margin-bottom: 20px;
+	border: 1px solid transparent;
+	border-radius: 4px;
+}*/
