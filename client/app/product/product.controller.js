@@ -1,22 +1,73 @@
 'use strict';
 
 angular.module('mkApp')
-  .controller('ProductCtrl', function ($scope, $http) {
-    $scope.awesomeThings = [];
+  .controller('ProductCtrl', function ($scope, $http, Notification) {
+    $scope.products = [];
+    $scope.edit = null;
 
-    $http.get('/api/things').success(function(awesomeThings) {
-      $scope.awesomeThings = awesomeThings;
-    });
+    var allSelected = false;
+    var successGet = function(products){
+      $scope.products = products;
+    }
+    var validateParameters = function(product){
+      var status = true;
+      if (!product.name){
+        status = false;
+        Notification.addAlert("El nombre de producto no puede estar vacio.", "danger", 5000);
+        product.name = "Indefinido";
+        $('input#'+product._id).closest('tr').addClass('danger');
+      }
+      return status;
+    }
 
-    $scope.addThing = function() {
-      if($scope.newThing === '') {
+    $http.get('/api/products').success(successGet);
+
+    $scope.addProduct = function() {
+      if($scope.newProduct === '') {
         return;
       }
-      $http.post('/api/things', { name: $scope.newThing });
-      $scope.newThing = '';
+      $http.post('/api/products', $scope.newProduct).success(function(){
+        $http.get('/api/products').success(successGet);
+      });
+      $scope.newProduct = '';
     };
 
-    $scope.deleteThing = function(thing) {
-      $http.delete('/api/things/' + thing._id);
-    };
+    $scope.selectAllProducts = function(){
+      if (allSelected){
+        $('.table input.header-checkbox').each(function(){
+          $(this).prop("checked", false);
+        });
+        allSelected = false;
+      }
+      else{
+        $('.table input.header-checkbox').each(function(){
+          $(this).prop("checked", true);
+        });
+        allSelected = true;
+      }
+    }
+
+    $scope.deleteSelectedProducts = function() {
+      $('.table input.header-checkbox').each(function(){
+        if ($(this).prop("checked")){
+          $http.delete('/api/products/' + $(this).val()).success(function(){
+            $http.get('/api/products').success(successGet);
+          });
+        }
+      });
+    }
+
+    $scope.editProduct = function(product){
+      $scope.edit = product._id;
+    }
+
+    $scope.updateProduct = function(product){
+      $scope.edit = product.null;
+      if (validateParameters(product)){
+        $http.put('/api/products/' + product._id, product).success(function(){
+          $http.get('/api/products').success(successGet);
+        });
+      }
+    }
+
   });

@@ -11,17 +11,18 @@
 			<div class="col-sm-2">
 				<select class="form-control" ng-model="order.day" ng-options="day for day in days" id="dateSelect"></select>
 			</div>
-			<div class="col-sm-3">
-				<select class="form-control" ng-model="order.month" ng-options="month for month in months"></select>
-			</div>
-			<div class="col-sm-3">
-				<select class="form-control" ng-model="order.year" ng-options="year for year in years"></select>
-			</div>
+			<div style="padding-top: 7px;">- {{order.month}} - {{order.year}}</div>
 		</div>
 		<div class="form-group">
 			<label for="customerSelect" class="col-sm-2 control-label">Cliente: </label>
 			<div class="col-sm-10">
 				<select class="form-control" ng-model="order.customer" ng-options="customer.name for customer in customers" id="customerSelect"></select>
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="productSelect" class="col-sm-2 control-label">Productos: </label>
+			<div class="col-sm-10">
+				<select multiple class="form-control" ng-model="order.products" ng-options="product.name for product in products" id="productSelect"></select>
 			</div>
 		</div>
 		<!-- <div class="form-group">

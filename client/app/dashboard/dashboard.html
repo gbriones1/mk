@@ -4,19 +4,21 @@
   <div class="container">
     <h1>
       <div class="col-lg-6">
-        <select class="form-control input-lg" ng-model="currentOrder.month" ng-options="month for month in months"></select>
+        <select class="form-control input-lg" ng-model="currentOrder.month" ng-options="month for month in months" ng-change="reloadVariables()"></select>
       </div>
       <div class="col-lg-6">
-        <select class="form-control input-lg" ng-model="currentOrder.year" ng-options="year for year in years"></select>
+        <select class="form-control input-lg" ng-model="currentOrder.year" ng-options="year for year in years" ng-change="reloadVariables()"></select>
       </div>
     </h1>
   </div>
 </header>
 
 <div class="container">
-  <div class="row">
-    <div class="col-lg-12" ng-if="customers">
-      <h1 class="page-header">Lista de peticiones:<button class="btn btn-success pull-right" ng-click="newPurchase()">Nueva Compra</button></h1>
+  <div class="row" ng-if="customers.length && products.length">
+    <div class="col-lg-12">
+      <h1 class="page-header">Lista de peticiones:
+        <div class="pull-right"><button class="btn btn-success" ng-click="newPurchase()">Nueva Compra</button></div>
+      </h1>
     </div>
     <div class="col-lg-12" ng-if="customersWithOrders.length">
       <accordion close-others="true">
@@ -25,14 +27,127 @@
             <div class="customer-info" data-customer-id="{{customer._id}}"></div>
             {{customer.name}}<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
           </accordion-heading>
-          <table class="table table-hover">
+          <h2>Compras
+            <div class="pull-right">
+              <div style="display: inline-block;font-size: medium;vertical-align: middle;">
+                <form class="form-inline">
+                  <!-- <div class="form-group">
+                    <label class="control-label">Dia: </label>
+                    <select class="form-control" ng-model="customer.newPurchase.day" ng-options="day for day in days"></select>
+                  </div> -->
+                  <div class="form-group">
+                    <!-- <label class="control-label">Producto: </label> -->
+                  <div class="input-group">
+                    <div class="input-group-addon"><i class='fa fa-gift'></i></div>
+                    <select class="form-control"  ng-model="customer.newPurchase" ng-options="product.name for product in products" style="width: 200px"><option value="" disabled selected>Producto</option></select>
+                  </div>
+                  </div>
+                </form>
+              </div>
+              <button class="btn btn-success" ng-click="addPurchase(customer)"><i class='fa fa-shopping-cart'></i> Agregar</button>
+              <button class="btn btn-danger" ng-click="deleteSelectedPurchases(customer)"><i class='fa fa-trash'></i> Eliminar</button>
+            </div>
+          </h2>
+          <div class="table-responsive">
+          <table class="table table-hover" ng-if="getOrderCustomerPurchases(customer).length">
             <thead>
               <tr>
-                <th>Compras</th>
+                <th><input type="checkbox" ng-click="selectCustomerPurchases(customer)" id="check-purchases-{{customer._id}}"></th>
+                <th>Fecha</th>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Lo vendi en</th>
+                <th>Lo compro en</th>
+                <th>Editar</th>
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat="purchase in customer.purchases"><td>{{purchase}}</td></tr>
+              <tr ng-repeat="purchase in getOrderCustomerPurchases(customer)">
+                <td><input type="checkbox" class="header-checkbox check-purchase-{{customer._id}}" value="{{$index}}"></td>
+                <td ng-if="edit.customer!=customer._id || edit.purchase!=$index">{{purchase.day}}-{{currentOrder.month}}-{{currentOrder.year}}</td>
+                <td ng-if="edit.customer!=customer._id || edit.purchase!=$index">{{getProductName(purchase.product)}}</td>
+                <td ng-if="edit.customer!=customer._id || edit.purchase!=$index">{{purchase.quantity}}</td>
+                <td ng-if="edit.customer!=customer._id || edit.purchase!=$index">${{purchase.salePrice}}</td>
+                <td ng-if="edit.customer!=customer._id || edit.purchase!=$index">${{purchase.buyPrice}}</td>
+                <td ng-if="edit.customer!=customer._id || edit.purchase!=$index"><button class="btn btn-info btn-xs" ng-click="editPurchase(customer, $index)" ><i class='fa fa-edit'></i></button></td>
+                <td ng-if="edit.customer==customer._id && edit.purchase==$index" class="data-input"><select class="form-control" ng-model="purchase.day" ng-options="day for day in days" style="max-width: 70px;display: inline;"></select>-{{currentOrder.month}}-{{currentOrder.year}}</td>
+                <td ng-if="edit.customer==customer._id && edit.purchase==$index">{{getProductName(purchase.product)}}</td>
+                <td ng-if="edit.customer==customer._id && edit.purchase==$index" class="data-input"><input type="text" class="form-control" ng-model="purchase.quantity"></td>
+                <td ng-if="edit.customer==customer._id && edit.purchase==$index" class="data-input"><input type="text" class="form-control" ng-model="purchase.salePrice"></td>
+                <td ng-if="edit.customer==customer._id && edit.purchase==$index" class="data-input"><input type="text" class="form-control" ng-model="purchase.buyPrice"></td>
+                <td ng-if="edit.customer==customer._id && edit.purchase==$index"><button class="btn btn-success btn-xs" ng-click="updatePurchase(customer)" ><i class='fa fa-check-square-o'></i></button></td>
+              </tr>
+            </tbody>
+          </table>
+          </div>
+          <hr>
+          <h2>Pagos
+            <div class="pull-right">
+              <div style="display: inline-block;font-size: medium;vertical-align: middle;">
+                <form class="form-inline">
+                  <!-- <div class="form-group">
+                    <label class="control-label">Dia: </label>
+                    <select class="form-control" ng-model="customer.newPayment.day" ng-options="day for day in days"></select>
+                  </div> -->
+                  <div class="form-group">
+                  <div class="input-group">
+                    <div class="input-group-addon"><i class='fa fa-dollar'></i></div>
+                    <input class="form-control" type="text" ng-model="customer.newPayment" placeholder="Cantidad">
+                  </div>
+                  </div>
+                </form>
+              </div>
+              <button class="btn btn-success" ng-click="addPayment(customer)"><i class='fa fa-money'></i> Agregar</button>
+              <button class="btn btn-danger" ng-click="deleteSelectedPayments(customer)"><i class='fa fa-trash'></i> Eliminar</button>
+            </div>
+          </h2>
+          <div class="table-responsive">
+          <table class="table table-hover" ng-if="getOrderCustomerPayments(customer).length">
+            <thead>
+              <tr>
+                <th><input type="checkbox" ng-click="selectCustomerPayments(customer)" id="check-payments-{{customer._id}}"></th>
+                <th>Fecha</th>
+                <th>Cantidad</th>
+                <th>Editar</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="payment in getOrderCustomerPayments(customer)">
+                <td><input type="checkbox" class="header-checkbox check-payment-{{customer._id}}" value="{{$index}}"></td>
+                <td ng-if="edit.customer!=customer._id || edit.payment!=$index">{{payment.day}}-{{currentOrder.month}}-{{currentOrder.year}}</td>
+                <td ng-if="edit.customer!=customer._id || edit.payment!=$index">${{payment.amount}}</td>
+                <td ng-if="edit.customer!=customer._id || edit.payment!=$index"><button class="btn btn-info btn-xs" ng-click="editPayment(customer, $index)" ><i class='fa fa-edit'></i></button></td>
+                <td ng-if="edit.customer==customer._id && edit.payment==$index" class="data-input"><select class="form-control" ng-model="payment.day" ng-options="day for day in days" style="max-width: 70px;display: inline;"></select>-{{currentOrder.month}}-{{currentOrder.year}}</td>
+                <td ng-if="edit.customer==customer._id && edit.payment==$index" class="data-input"><input type="text" class="form-control" ng-model="payment.amount"></td>
+                <td ng-if="edit.customer==customer._id && edit.payment==$index"><button class="btn btn-success btn-xs" ng-click="updatePayment(customer)" ><i class='fa fa-check-square-o'></i></button></td>
+              </tr>
+            </tbody>
+          </table>
+          </div>
+          <hr>
+          <table class="table table-hover pull-right" style="max-width: 200px;">
+            <thead>
+              <tr>
+                <th colspan="2" style="text-align: center;font-size: x-large;">Cuenta</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th>Total</th>
+                <td>${{getOrderPrice(customer)}}</td>
+              </tr>
+              <tr>
+                <th>Pagado</th>
+                <td>${{getOrderPayments(customer)}}</td>
+              </tr>
+              <tr>
+                <th>Restante</th>
+                <td>${{getOrderMissingPay(customer)}}</td>
+              </tr>
+              <tr>
+                <th>Ganancia</th>
+                <td>${{getOrderEarning(customer)}}</td>
+              </tr>
             </tbody>
           </table>
         </accordion-group>

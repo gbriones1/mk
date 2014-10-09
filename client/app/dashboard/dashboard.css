@@ -1,3 +1,14 @@
+.panel-heading a.accordion-toggle{
+	display: block;
+	text-decoration: none;
+}
+
+table td.data-input{
+	padding-top: 0px !important;
+	padding-bottom: 0px !important;
+	vertical-align: middle !important;
+}
+
 @media (max-width: 480px){
 	.page-header .btn {
 		float: none;
