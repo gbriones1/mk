@@ -5,7 +5,8 @@ angular.module('mkApp', [
   'ngResource',
   'ngSanitize',
   'ngRoute',
-  'ui.bootstrap'
+  'ui.bootstrap',
+  'angularCharts'
 ])
   .config(function ($routeProvider, $locationProvider) {
     $routeProvider
