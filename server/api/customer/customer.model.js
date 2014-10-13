@@ -7,8 +7,7 @@ var CustomerSchema = new Schema({
   name: String,
   phone: String,
   info: String,
-  purchases: Object,
-  payments: Object
+  orders: Object
 });
 
 module.exports = mongoose.model('Customer', CustomerSchema);

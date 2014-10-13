@@ -6,6 +6,7 @@ angular.module('mkApp')
     $scope.years=[2013, 2014, 2015, 2016];
     $scope.selectedYear = new Date().getFullYear();
     $scope.customers = [];
+    $scope.products = [];
 
     $scope.annualEarningsChart = {
       chartType:"bar",
@@ -73,27 +74,23 @@ angular.module('mkApp')
 
     var reloadAnnualEarningsChart = function(){
       $scope.annualEarningsChart.data.data = [];
-      console.log($scope.selectedYear===null);
       for (var monthIdx in $scope.months){
         var orderBuys = 0;
         var orderPayments = 0;
         for (var customerIdx in $scope.customers){
           var customer = $scope.customers[customerIdx];
-          if (customer.purchases){
-            for (var purchaseKey in customer.purchases){
-              if (purchaseKey == $scope.selectedYear+$scope.months[monthIdx]){
-                for (var purchaseIdx in customer.purchases[purchaseKey]){
-                  var purchase = customer.purchases[purchaseKey][purchaseIdx];
+          if (customer.orders){
+            for (var orderKey in customer.orders){
+              if (orderKey == $scope.selectedYear+$scope.months[monthIdx]){
+                var customerOrder = customer.orders[orderKey];
+                for (var purchaseIdx in customerOrder.purchases){
+                  var purchase = customerOrder.purchases[purchaseIdx];
                   orderBuys += purchase.buyPrice*purchase.quantity;
                 }
-              }
-            }
-          }
-          if (customer.payments){
-            for (var paymentKey in customer.payments){
-              if (paymentKey == $scope.selectedYear+$scope.months[monthIdx]){
-                for (var paymentIdx in customer.payments[paymentKey]){
-                  orderPayments += Number(customer.payments[paymentKey][paymentIdx].amount);
+                if (customerOrder.payments){
+                  for (var paymentIdx in customerOrder.payments){
+                    orderPayments += Number(customerOrder.payments[paymentIdx].amount);
+                  }
                 }
               }
             }
@@ -107,11 +104,62 @@ angular.module('mkApp')
     }
 
     var reloadMostValuableCustomersChart = function(){
-
+      $scope.mostValuableCustomersChart.data.data = [];
+      var sortableCustomerPurchases = [];
+      for (var customerIdx in $scope.customers){
+        var customer = $scope.customers[customerIdx];
+        var customerTotalPurchases = 0;
+        for (var orderKey in customer.orders){
+          for (var purchaseIdx in customer.orders[orderKey].purchases){
+            var purchase = customer.orders[orderKey].purchases[purchaseIdx];
+            customerTotalPurchases += purchase.buyPrice*purchase.quantity;
+          }
+        }
+        sortableCustomerPurchases.push([customer.name, customerTotalPurchases]);
+      }
+      sortableCustomerPurchases.sort(function(a, b) {return b[1] - a[1]});
+      for (var customerIdx in sortableCustomerPurchases){
+        $scope.mostValuableCustomersChart.data.data.push({
+          x:sortableCustomerPurchases[customerIdx][0],
+          y:[sortableCustomerPurchases[customerIdx][1]]
+        })
+      }
     }
 
     var reloadMostPurchasedProductChart = function(){
-
+      $scope.mostPurchasedProductChart.data.data = [];
+      var sortablePurchasedProducts = [];
+      var products = {}
+      for (var customerIdx in $scope.customers){
+        var customer = $scope.customers[customerIdx];
+        for (var orderKey in customer.orders){
+          for (var purchaseIdx in customer.orders[orderKey].purchases){
+            var purchase = customer.orders[orderKey].purchases[purchaseIdx];
+            var productName = "Desconocido"
+            for (var productIdx in $scope.products){
+              if ($scope.products[productIdx]._id == purchase.product){
+                productName = $scope.products[productIdx].name;
+              }
+            }
+            if (products[productName]){
+              products[productName] += Number(purchase.quantity);
+            }
+            else{
+              products[productName] = Number(purchase.quantity);
+            }
+          }
+        }
+      }
+      for (var productIdx in products){
+        sortablePurchasedProducts.push([productIdx, products[productIdx]]);
+      }
+      sortablePurchasedProducts.sort(function(a, b) {return b[1] - a[1]});
+      for (var productIdx in sortablePurchasedProducts){
+        $scope.mostPurchasedProductChart.data.data.push({
+          x:sortablePurchasedProducts[productIdx][0],
+          y:[sortablePurchasedProducts[productIdx][1]]
+        })
+      }
     }
 
     $scope.reloadCharts = function(){
@@ -122,7 +170,10 @@ angular.module('mkApp')
 
     $http.get('/api/customers').success(function(customers){
       $scope.customers = customers;
-      $scope.reloadCharts();
+      $http.get('/api/products').success(function(products){
+        $scope.products = products;
+        $scope.reloadCharts();
+      });
     });
 
 

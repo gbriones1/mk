@@ -85,14 +85,14 @@
             <div class="pull-right">
               <div style="display: inline-block;font-size: medium;vertical-align: middle;">
                 <form class="form-inline">
-                  <!-- <div class="form-group">
-                    <label class="control-label">Dia: </label>
-                    <select class="form-control" ng-model="customer.newPayment.day" ng-options="day for day in days"></select>
-                  </div> -->
+                  <div class="form-group">
+                    <label class="control-label">Fecha: </label>
+                    <input type="date" class="form-control" ng-model="customer.newPaymentDate">
+                  </div>
                   <div class="form-group">
                   <div class="input-group">
                     <div class="input-group-addon"><i class='fa fa-dollar'></i></div>
-                    <input class="form-control" type="text" ng-model="customer.newPayment" placeholder="Cantidad">
+                    <input class="form-control" type="text" ng-model="customer.newPaymentAmount" placeholder="Cantidad">
                   </div>
                   </div>
                 </form>
@@ -114,10 +114,10 @@
             <tbody>
               <tr ng-repeat="payment in getOrderCustomerPayments(customer)">
                 <td><input type="checkbox" class="header-checkbox check-payment-{{customer._id}}" value="{{$index}}"></td>
-                <td ng-if="edit.customer!=customer._id || edit.payment!=$index">{{payment.day}}-{{currentOrder.month}}-{{currentOrder.year}}</td>
+                <td ng-if="edit.customer!=customer._id || edit.payment!=$index">{{payment.date}}</td>
                 <td ng-if="edit.customer!=customer._id || edit.payment!=$index">${{payment.amount}}</td>
                 <td ng-if="edit.customer!=customer._id || edit.payment!=$index"><button class="btn btn-info btn-xs" ng-click="editPayment(customer, $index)" ><i class='fa fa-edit'></i></button></td>
-                <td ng-if="edit.customer==customer._id && edit.payment==$index" class="data-input"><select class="form-control" ng-model="payment.day" ng-options="day for day in days" style="max-width: 70px;display: inline;"></select>-{{currentOrder.month}}-{{currentOrder.year}}</td>
+                <td ng-if="edit.customer==customer._id && edit.payment==$index" class="data-input"><input type="date" class="form-control" ng-model="payment.date"></td>
                 <td ng-if="edit.customer==customer._id && edit.payment==$index" class="data-input"><input type="text" class="form-control" ng-model="payment.amount"></td>
                 <td ng-if="edit.customer==customer._id && edit.payment==$index"><button class="btn btn-success btn-xs" ng-click="updatePayment(customer)" ><i class='fa fa-check-square-o'></i></button></td>
               </tr>

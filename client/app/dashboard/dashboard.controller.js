@@ -13,8 +13,7 @@ angular.module('mkApp')
     $scope.thisDay = $scope.currentDate.getDate();
     $scope.customers = [];
     $scope.products = [];
-    $scope.purchases = {};
-    $scope.payments = {};
+    $scope.orders = {};
     $scope.customersWithOrders = [];
     $scope.edit = {
       customer:null,
@@ -27,7 +26,7 @@ angular.module('mkApp')
       if(!order.customer){
         Notification.addAlert("El nombre de cliente no puede estar vacio.", "danger", 5000);
       }
-      else if (Object.keys($scope.purchases).indexOf(order.customer._id)+1){
+      else if (Object.keys($scope.orders).indexOf(order.customer._id)+1){
         Notification.addAlert("El nombre de cliente ya ha sido agregado a la lista de peticiones.", "warning", 5000);
       }
       else if (!order.products){
@@ -50,21 +49,13 @@ angular.module('mkApp')
     $scope.reloadVariables = function(){
       $scope.customersWithOrders= [];
       $scope.purchases = {};
-      $scope.payments = {};
       for (var customerIdx in $scope.customers){
         var customer = $scope.customers[customerIdx];
-        if (customer.purchases){
-          for (var purchaseKey in customer.purchases){
-            if (purchaseKey == $scope.currentOrder.year+$scope.currentOrder.month && customer.purchases[purchaseKey].length){
+        if (customer.orders){
+          for (var orderKey in customer.orders){
+            if (orderKey == $scope.currentOrder.year+$scope.currentOrder.month && customer.orders[orderKey].purchases.length){
               $scope.customersWithOrders.push(customer);
-              $scope.purchases[customer._id] = customer.purchases[purchaseKey]
-            }
-          }
-        }
-        if (customer.payments){
-          for (var paymentKey in customer.payments){
-            if (paymentKey == $scope.currentOrder.year+$scope.currentOrder.month){
-              $scope.payments[customer._id] = customer.payments[paymentKey]
+              $scope.orders[customer._id] = customer.orders[orderKey]
             }
           }
         }
@@ -118,14 +109,14 @@ angular.module('mkApp')
               quantity:1,
             });
           }
-          if (!order.customer.purchases){
-            order.customer.purchases = {};
+          if (!order.customer.orders){
+            order.customer.orders = {};
           }
-          if (!order.customer.payments){
-            order.customer.payments = {};
+          if (!order.customer.orders[$scope.currentOrder.year+$scope.currentOrder.month]){
+            order.customer.orders[$scope.currentOrder.year+$scope.currentOrder.month] = {}
           }
-          order.customer.purchases[$scope.currentOrder.year+$scope.currentOrder.month] = purchases;
-          order.customer.payments[$scope.currentOrder.year+$scope.currentOrder.month] = [];
+          order.customer.orders[$scope.currentOrder.year+$scope.currentOrder.month].purchases = purchases;
+          order.customer.orders[$scope.currentOrder.year+$scope.currentOrder.month].payments = [];
           $http.put('/api/customers/' + order.customer._id, order.customer).success(function(){
             $scope.reloadVariables();
           });
@@ -135,7 +126,7 @@ angular.module('mkApp')
 
     $scope.addPurchase = function(customer){
       if (customer.newPurchase){
-        customer.purchases[$scope.currentOrder.year+$scope.currentOrder.month].push({
+        customer.orders[$scope.currentOrder.year+$scope.currentOrder.month].purchases.push({
           day:$scope.thisDay,
           product:customer.newPurchase._id,
           salePrice:Number(customer.newPurchase.salePrice),
@@ -174,7 +165,7 @@ angular.module('mkApp')
       if (productsToDelete.length){
         productsToDelete.reverse();
         for (var iIdx in productsToDelete){
-          customer.purchases[$scope.currentOrder.year+$scope.currentOrder.month].splice(productsToDelete[iIdx], 1);
+          customer.orders[$scope.currentOrder.year+$scope.currentOrder.month].purchases.splice(productsToDelete[iIdx], 1);
         }
         $http.put('/api/customers/' + customer._id, customer);
       }
@@ -192,13 +183,14 @@ angular.module('mkApp')
     }
 
     $scope.addPayment = function(customer){
-      if (customer.newPayment){
+      if (customer.newPaymentDate && customer.newPaymentAmount){
         var payment = {
-          day:$scope.thisDay,
-          amount:Number(customer.newPayment),
+          date:customer.newPaymentDate,
+          amount:Number(customer.newPaymentAmount),
         };
-        customer.payments[$scope.currentOrder.year+$scope.currentOrder.month].push(payment);
-        delete customer.newPayment;
+        customer.orders[$scope.currentOrder.year+$scope.currentOrder.month].payments.push(payment);
+        delete customer.newPaymentAmount;
+        delete customer.newPaymentDate;
         $http.put('/api/customers/' + customer._id, customer);
       }
     }
@@ -230,7 +222,7 @@ angular.module('mkApp')
       if (paymentsToDelete.length){
         paymentsToDelete.reverse();
         for (var iIdx in paymentsToDelete){
-          customer.payments[$scope.currentOrder.year+$scope.currentOrder.month].splice(paymentsToDelete[iIdx], 1);
+          customer.orders[$scope.currentOrder.year+$scope.currentOrder.month].payments.splice(paymentsToDelete[iIdx], 1);
         }
         $http.put('/api/customers/' + customer._id, customer);
       }
@@ -257,23 +249,23 @@ angular.module('mkApp')
       return "No encontrado!"
     }
     $scope.getOrderCustomerPurchases = function(customer){
-      return $scope.purchases[customer._id]
+      return $scope.orders[customer._id].purchases
     }
     $scope.getOrderCustomerPayments = function(customer){
-      return $scope.payments[customer._id]
+      return $scope.orders[customer._id].payments
     }
     $scope.getOrderPrice = function(customer){
       var orderPrice = 0;
-      for (var purchaseIdx in $scope.purchases[customer._id]){
-        var purchase = $scope.purchases[customer._id][purchaseIdx];
+      for (var purchaseIdx in $scope.orders[customer._id].purchases){
+        var purchase = $scope.orders[customer._id].purchases[purchaseIdx];
         orderPrice += purchase.salePrice*purchase.quantity;
       }
       return orderPrice
     }
     $scope.getOrderPayments = function(customer){
       var orderPayments = 0;
-      for (var paymentIdx in $scope.payments[customer._id]){
-        orderPayments += Number($scope.payments[customer._id][paymentIdx].amount);
+      for (var paymentIdx in $scope.orders[customer._id].payments){
+        orderPayments += Number($scope.orders[customer._id].payments[paymentIdx].amount);
       }
       return orderPayments
     }
@@ -282,8 +274,8 @@ angular.module('mkApp')
     }
     $scope.getOrderEarning = function(customer){
       var orderBuys = 0;
-      for (var purchaseIdx in $scope.purchases[customer._id]){
-        var purchase = $scope.purchases[customer._id][purchaseIdx];
+      for (var purchaseIdx in $scope.orders[customer._id].purchases){
+        var purchase = $scope.orders[customer._id].purchases[purchaseIdx];
         orderBuys += purchase.buyPrice*purchase.quantity;
       }
       return $scope.getOrderPayments(customer) - orderBuys
