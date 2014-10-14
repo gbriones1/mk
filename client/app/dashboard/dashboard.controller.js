@@ -137,6 +137,7 @@ angular.module('mkApp')
               day:Number(order.day),
               product:order.products[productIdx]._id,
               price:Number(order.products[productIdx].price),
+              isDelivered:false,
               quantity:1,
             });
           }
@@ -155,12 +156,20 @@ angular.module('mkApp')
       });
     }
 
+    $scope.getFormattedDelivery = function(purchase){
+      if (purchase.isDelivered){
+        return "Si"
+      }
+      return "No"
+    }
+
     $scope.addPurchase = function(customer){
       if (customer.newPurchase){
         customer.orders[$scope.currentOrder.year+$scope.currentOrder.month].purchases.push({
           day:$scope.thisDay,
           product:customer.newPurchase._id,
           price:Number(customer.newPurchase.price),
+          isDelivered: false,
           quantity:1,
         });
         delete customer.newPurchase;

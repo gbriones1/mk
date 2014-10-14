@@ -55,6 +55,7 @@
                 <th><input type="checkbox" ng-click="selectCustomerPurchases(customer)" id="check-purchases-{{customer._id}}"></th>
                 <th>Fecha</th>
                 <th>Producto</th>
+                <th>Entregado</th>
                 <th>Cantidad</th>
                 <th>Precio</th>
                 <th>Editar</th>
@@ -65,11 +66,13 @@
                 <td><input type="checkbox" class="header-checkbox check-purchase-{{customer._id}}" value="{{$index}}"></td>
                 <td ng-if="edit.customer!=customer._id || edit.purchase!=$index">{{purchase.day}}-{{currentOrder.month}}-{{currentOrder.year}}</td>
                 <td ng-if="edit.customer!=customer._id || edit.purchase!=$index">{{getProductName(purchase.product)}}</td>
+                <td ng-if="edit.customer!=customer._id || edit.purchase!=$index">{{getFormattedDelivery(purchase)}}</td>
                 <td ng-if="edit.customer!=customer._id || edit.purchase!=$index">{{purchase.quantity}}</td>
                 <td ng-if="edit.customer!=customer._id || edit.purchase!=$index">${{purchase.price}}</td>
                 <td ng-if="edit.customer!=customer._id || edit.purchase!=$index"><button class="btn btn-info btn-xs" ng-click="editPurchase(customer, $index)" ><i class='fa fa-edit'></i></button></td>
                 <td ng-if="edit.customer==customer._id && edit.purchase==$index" class="data-input"><select class="form-control" ng-model="purchase.day" ng-options="day for day in days" style="max-width: 70px;display: inline;"></select>-{{currentOrder.month}}-{{currentOrder.year}}</td>
                 <td ng-if="edit.customer==customer._id && edit.purchase==$index">{{getProductName(purchase.product)}}</td>
+                <td ng-if="edit.customer==customer._id && edit.purchase==$index" class="data-input"><input type="checkbox" class="form-control" ng-model="purchase.isDelivered"></td>
                 <td ng-if="edit.customer==customer._id && edit.purchase==$index" class="data-input"><input type="text" class="form-control" ng-model="purchase.quantity"></td>
                 <td ng-if="edit.customer==customer._id && edit.purchase==$index" class="data-input"><input type="text" class="form-control" ng-model="purchase.price"></td>
                 <td ng-if="edit.customer==customer._id && edit.purchase==$index"><button class="btn btn-success btn-xs" ng-click="updatePurchase(customer)" ><i class='fa fa-check-square-o'></i></button></td>
