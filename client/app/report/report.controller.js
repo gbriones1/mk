@@ -85,7 +85,7 @@ angular.module('mkApp')
                 var customerOrder = customer.orders[orderKey];
                 for (var purchaseIdx in customerOrder.purchases){
                   var purchase = customerOrder.purchases[purchaseIdx];
-                  orderBuys += purchase.buyPrice*purchase.quantity;
+                  orderBuys += purchase.price*purchase.quantity*.6;
                 }
                 if (customerOrder.payments){
                   for (var paymentIdx in customerOrder.payments){
@@ -112,7 +112,7 @@ angular.module('mkApp')
         for (var orderKey in customer.orders){
           for (var purchaseIdx in customer.orders[orderKey].purchases){
             var purchase = customer.orders[orderKey].purchases[purchaseIdx];
-            customerTotalPurchases += purchase.buyPrice*purchase.quantity;
+            customerTotalPurchases += purchase.price*purchase.quantity;
           }
         }
         sortableCustomerPurchases.push([customer.name, customerTotalPurchases]);

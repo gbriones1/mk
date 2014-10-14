@@ -21,6 +21,26 @@ angular.module('mkApp')
       payment:null
     };
 
+    var sortCustomerPayments = function(customer){
+      customer.orders[$scope.currentOrder.year+$scope.currentOrder.month].payments.sort(function(a, b) {
+        if (a.date < b.date)
+           return -1;
+        if (a.date > b.date)
+          return 1;
+        return 0;
+      });
+    }
+
+    var sortCustomerPurchases = function(customer){
+      customer.orders[$scope.currentOrder.year+$scope.currentOrder.month].purchases.sort(function(a, b) {
+        if (a.day < b.day)
+           return -1;
+        if (a.day > b.day)
+          return 1;
+        return 0;
+      });
+    }
+
     var validateOrder = function(order){
       var status=true;
       if(!order.customer){
@@ -36,14 +56,26 @@ angular.module('mkApp')
     }
 
     var successGet = function(customers){
-      $scope.customers = customers;
+      $scope.customers = customers.sort(function(a, b) {
+        if (a.name < b.name)
+           return -1;
+        if (a.name > b.name)
+          return 1;
+        return 0;
+      });
       $scope.reloadVariables();
     }
 
     $http.get('/api/customers').success(successGet);
 
     $http.get('/api/products').success(function(products){
-      $scope.products = products;
+      $scope.products = products.sort(function(a, b) {
+        if (a.name < b.name)
+           return -1;
+        if (a.name > b.name)
+          return 1;
+        return 0;
+      });
     });
 
     $scope.reloadVariables = function(){
@@ -104,8 +136,7 @@ angular.module('mkApp')
             purchases.push({
               day:Number(order.day),
               product:order.products[productIdx]._id,
-              salePrice:Number(order.products[productIdx].salePrice),
-              buyPrice:Number(order.products[productIdx].buyPrice),
+              price:Number(order.products[productIdx].price),
               quantity:1,
             });
           }
@@ -129,11 +160,11 @@ angular.module('mkApp')
         customer.orders[$scope.currentOrder.year+$scope.currentOrder.month].purchases.push({
           day:$scope.thisDay,
           product:customer.newPurchase._id,
-          salePrice:Number(customer.newPurchase.salePrice),
-          buyPrice:Number(customer.newPurchase.buyPrice),
+          price:Number(customer.newPurchase.price),
           quantity:1,
         });
         delete customer.newPurchase;
+        sortCustomerPurchases(customer);
         $http.put('/api/customers/' + customer._id, customer);
       }
     }
@@ -179,7 +210,12 @@ angular.module('mkApp')
     $scope.updatePurchase = function(customer){
       $scope.edit.customer = null;
       $scope.edit.purchase = null;
+      sortCustomerPurchases(customer);
       $http.put('/api/customers/' + customer._id, customer);
+    }
+
+    $scope.getFormattedDate = function(date){
+      return date.split("-")[2]+"-"+$scope.months[date.split("-")[1]-1]+"-"+date.split("-")[0]
     }
 
     $scope.addPayment = function(customer){
@@ -191,6 +227,7 @@ angular.module('mkApp')
         customer.orders[$scope.currentOrder.year+$scope.currentOrder.month].payments.push(payment);
         delete customer.newPaymentAmount;
         delete customer.newPaymentDate;
+        sortCustomerPayments(customer);
         $http.put('/api/customers/' + customer._id, customer);
       }
     }
@@ -236,6 +273,7 @@ angular.module('mkApp')
     $scope.updatePayment = function(customer){
       $scope.edit.customer = null;
       $scope.edit.payment = null;
+      sortCustomerPayments(customer);
       $http.put('/api/customers/' + customer._id, customer);
     }
 
@@ -258,7 +296,7 @@ angular.module('mkApp')
       var orderPrice = 0;
       for (var purchaseIdx in $scope.orders[customer._id].purchases){
         var purchase = $scope.orders[customer._id].purchases[purchaseIdx];
-        orderPrice += purchase.salePrice*purchase.quantity;
+        orderPrice += purchase.price*purchase.quantity;
       }
       return orderPrice
     }
@@ -278,7 +316,7 @@ angular.module('mkApp')
         var purchase = $scope.orders[customer._id].purchases[purchaseIdx];
         orderBuys += purchase.buyPrice*purchase.quantity;
       }
-      return $scope.getOrderPayments(customer) - orderBuys
+      return $scope.getOrderPayments(customer) - $scope.getOrderPrice(customer)*.6
     }
 
   });

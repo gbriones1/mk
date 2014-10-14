@@ -20,13 +20,7 @@
         <div class="form-group">
           <div class="input-group">
             <div class="input-group-addon"><i class='fa fa-dollar'></i></div>
-            <input ng-model="newProduct.salePrice" type="text" class="form-control" id="saleInput" placeholder="En cuanto lo vendo">
-          </div>
-        </div>
-        <div class="form-group">
-          <div class="input-group">
-            <div class="input-group-addon"><i class='fa fa-dollar'></i></div>
-            <input ng-model="newProduct.buyPrice" type="text" class="form-control" id="buyInput" placeholder="En cuantp lo compro">
+            <input ng-model="newProduct.price" type="text" class="form-control" id="saleInput" placeholder="Precio">
           </div>
         </div>
         <button type="submit" class="btn btn-success" ng-click="addProduct()"><i class='fa fa-plus'></i> Agregar</button>
@@ -46,21 +40,18 @@
         <tr>
           <th><input type="checkbox" ng-click="selectAllProducts()"></th>
           <th>Nombre</th>
-          <th>En cuanto lo vendo</th>
-          <th>En cuanto lo compro</th>
-          <th>Cambios</th>
+          <th>Precio</th>
+          <th>Editar</th>
         </tr>
       </thead>
       <tbody>
         <tr ng-repeat="product in products">
           <td><input type="checkbox" class="header-checkbox" value="{{product._id}}" id="{{product._id}}"></td>
           <td ng-if="edit!=product._id">{{product.name}}</td>
-          <td ng-if="edit!=product._id">${{product.salePrice}}</td>
-          <td ng-if="edit!=product._id">${{product.buyPrice}}</td>
+          <td ng-if="edit!=product._id">${{product.price}}</td>
           <td ng-if="edit!=product._id"><button class="btn btn-info btn-xs" ng-click="editProduct(product)" ><i class='fa fa-edit'></i></button></td>
           <td ng-if="edit==product._id"><input type="text" class="form-control" ng-model="product.name"></td>
-          <td ng-if="edit==product._id"><input type="text" class="form-control" ng-model="product.salePrice"></td>
-          <td ng-if="edit==product._id"><input type="text" class="form-control" ng-model="product.buyPrice"></td>
+          <td ng-if="edit==product._id"><input type="text" class="form-control" ng-model="product.price"></td>
           <td ng-if="edit==product._id"><button class="btn btn-success btn-xs" ng-click="updateProduct(product)" ><i class='fa fa-check-square-o'></i></button></td>
         </tr>
       </tbody>

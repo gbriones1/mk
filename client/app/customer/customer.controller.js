@@ -7,7 +7,13 @@ angular.module('mkApp')
     var allSelected = false;
 
     var successGet = function(customers){
-      $scope.customers = customers;
+      $scope.customers = customers.sort(function(a, b) {
+        if (a.name < b.name)
+           return -1;
+        if (a.name > b.name)
+          return 1;
+        return 0;
+      });
       $timeout(function(){
         $('.panel-heading').each(function(){
           $(this).find('a.accordion-toggle').attr("href", "javascript:void(0);");

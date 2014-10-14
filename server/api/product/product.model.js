@@ -5,8 +5,7 @@ var mongoose = require('mongoose'),
 
 var ProductSchema = new Schema({
   name: String,
-  salePrice: Number,
-  buyPrice: Number,
+  price: Number,
 });
 
 module.exports = mongoose.model('Product', ProductSchema);

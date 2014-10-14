@@ -56,8 +56,7 @@
                 <th>Fecha</th>
                 <th>Producto</th>
                 <th>Cantidad</th>
-                <th>Lo vendi en</th>
-                <th>Lo compro en</th>
+                <th>Precio</th>
                 <th>Editar</th>
               </tr>
             </thead>
@@ -67,14 +66,12 @@
                 <td ng-if="edit.customer!=customer._id || edit.purchase!=$index">{{purchase.day}}-{{currentOrder.month}}-{{currentOrder.year}}</td>
                 <td ng-if="edit.customer!=customer._id || edit.purchase!=$index">{{getProductName(purchase.product)}}</td>
                 <td ng-if="edit.customer!=customer._id || edit.purchase!=$index">{{purchase.quantity}}</td>
-                <td ng-if="edit.customer!=customer._id || edit.purchase!=$index">${{purchase.salePrice}}</td>
-                <td ng-if="edit.customer!=customer._id || edit.purchase!=$index">${{purchase.buyPrice}}</td>
+                <td ng-if="edit.customer!=customer._id || edit.purchase!=$index">${{purchase.price}}</td>
                 <td ng-if="edit.customer!=customer._id || edit.purchase!=$index"><button class="btn btn-info btn-xs" ng-click="editPurchase(customer, $index)" ><i class='fa fa-edit'></i></button></td>
                 <td ng-if="edit.customer==customer._id && edit.purchase==$index" class="data-input"><select class="form-control" ng-model="purchase.day" ng-options="day for day in days" style="max-width: 70px;display: inline;"></select>-{{currentOrder.month}}-{{currentOrder.year}}</td>
                 <td ng-if="edit.customer==customer._id && edit.purchase==$index">{{getProductName(purchase.product)}}</td>
                 <td ng-if="edit.customer==customer._id && edit.purchase==$index" class="data-input"><input type="text" class="form-control" ng-model="purchase.quantity"></td>
-                <td ng-if="edit.customer==customer._id && edit.purchase==$index" class="data-input"><input type="text" class="form-control" ng-model="purchase.salePrice"></td>
-                <td ng-if="edit.customer==customer._id && edit.purchase==$index" class="data-input"><input type="text" class="form-control" ng-model="purchase.buyPrice"></td>
+                <td ng-if="edit.customer==customer._id && edit.purchase==$index" class="data-input"><input type="text" class="form-control" ng-model="purchase.price"></td>
                 <td ng-if="edit.customer==customer._id && edit.purchase==$index"><button class="btn btn-success btn-xs" ng-click="updatePurchase(customer)" ><i class='fa fa-check-square-o'></i></button></td>
               </tr>
             </tbody>
@@ -114,7 +111,7 @@
             <tbody>
               <tr ng-repeat="payment in getOrderCustomerPayments(customer)">
                 <td><input type="checkbox" class="header-checkbox check-payment-{{customer._id}}" value="{{$index}}"></td>
-                <td ng-if="edit.customer!=customer._id || edit.payment!=$index">{{payment.date}}</td>
+                <td ng-if="edit.customer!=customer._id || edit.payment!=$index">{{getFormattedDate(payment.date)}}</td>
                 <td ng-if="edit.customer!=customer._id || edit.payment!=$index">${{payment.amount}}</td>
                 <td ng-if="edit.customer!=customer._id || edit.payment!=$index"><button class="btn btn-info btn-xs" ng-click="editPayment(customer, $index)" ><i class='fa fa-edit'></i></button></td>
                 <td ng-if="edit.customer==customer._id && edit.payment==$index" class="data-input"><input type="date" class="form-control" ng-model="payment.date"></td>
