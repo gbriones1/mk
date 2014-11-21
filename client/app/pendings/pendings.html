@@ -1,0 +1,62 @@
+<div ng-include="'components/navbar/navbar.html'"></div>
+
+<header class="hero-unit" id="banner">
+  <div class="container">
+    <h1>Lista de Pendientes</h1>
+  </div>
+</header>
+
+<div class="container">
+  <div class="row" ng-if="pendingPayments.length">
+    <h1 class="page-header">Pedidos por cobrar:</h1>
+    <div class="col-lg-12">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Cliente</th>
+            <th>Deuda</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="pendingPayment in pendingPayments">
+            <td>{{pendingPayment.date}}</td>
+            <td>{{pendingPayment.customer}}</td>
+            <td>${{pendingPayment.debt}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="row" ng-if="pendingDeliveries.length">
+    <h1 class="page-header">Pedidos por entregar:</h1>
+    <div class="col-lg-12">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Cliente</th>
+            <th>Producto</th>
+            <th>Cantidad</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="pendingDeliverie in pendingDeliveries">
+            <td>{{pendingDeliverie.date}}</td>
+            <td>{{pendingDeliverie.customer}}</td>
+            <td>{{pendingDeliverie.product}}</td>
+            <td>{{pendingDeliverie.quantity}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+      <p>Angular Fullstack v2.0.13 |
+        <a href="https://twitter.com/tyhenkel">@tyhenkel</a> |
+         <a href="https://github.com/DaftMonk/generator-angular-fullstack/issues?state=open">Issues</a></p>
+  </div>
+</footer>

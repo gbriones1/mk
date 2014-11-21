@@ -14,6 +14,9 @@ angular.module('mkApp')
     },{
       'title': 'Reportes',
       'link': '/report'
+    },{
+      'title': 'Pendientes',
+      'link': '/pendings'
     }];
 
     $scope.isCollapsed = true;
